@@ -1,0 +1,180 @@
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+STEP 1 : add dependency (latest recommended)
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+dependency{
+    implementation 'com.github.smarteist:autoimageslider:1.3.9'
+}
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+STEP 2 : add folloeing code in activity_image_slider.xml (or activity_main.xml)
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ImageSliderActivity"
+    android:orientation="vertical" >
+
+    <com.smarteist.autoimageslider.SliderView
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:id="@+id/imageslider"
+        app:sliderAnimationDuration="600"
+        app:sliderAutoCycleDirection="right"
+        app:sliderAutoCycleEnabled="true"
+        app:sliderIndicatorAnimationDuration="600"
+        app:sliderIndicatorGravity="center_horizontal|bottom"
+        app:sliderIndicatorMargin="15dp"
+        app:sliderIndicatorOrientation="horizontal"
+        app:sliderIndicatorPadding="3dp"
+        app:sliderIndicatorRadius="2dp"
+        app:sliderIndicatorSelectedColor="#5A5A5A"
+        app:sliderIndicatorUnselectedColor="#fff"
+        app:sliderScrollTimeInSec="3"
+        app:sliderStartAutoCycle="true"
+        />
+
+
+</LinearLayout>
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+STEP 3 : create layout slider_item_layout.xml and add the following code
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_gravity="center">
+
+    <ImageView
+        android:layout_width="400dp"
+        android:layout_height="250dp"
+        android:id="@+id/iv_slider"
+        android:scaleType="centerCrop"/>
+
+</LinearLayout>
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+STEP 4 : create ImageSliderModel.java file and add following code
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+package com.example.practice101;
+
+public class ImageSiderModel {
+    int id;
+    int SliderImage;
+
+    public int getId() {        return id;    }
+
+    public void setId(int id) {        this.id = id;    }
+
+    public int getSliderImage() {        return SliderImage;    }
+
+    public void setSliderImage(int sliderImage) {        SliderImage = sliderImage;    }
+}
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+STEP 5 : add following code in ImageSliderActivity.java (or MainActivity.java)  file
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+package com.example.practice101;
+
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import com.smarteist.autoimageslider.IndicatorView.animation.type.IndicatorAnimationType;
+import com.smarteist.autoimageslider.SliderAnimations;
+import com.smarteist.autoimageslider.SliderView;
+import java.util.ArrayList;
+
+public class ImageSliderActivity extends AppCompatActivity {
+
+    private SliderView sliderView;
+    private ArrayList<ImageSiderModel> imageSiderModelList;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_image_slider);
+        sliderView = findViewById(R.id.imageslider);
+        getImageSlider();
+        ImageSliderAdapter imageSliderAdapter = new ImageSliderAdapter(this,imageSiderModelList);
+        sliderView.setSliderAdapter(imageSliderAdapter);
+        sliderView.startAutoCycle();
+        sliderView.setIndicatorAnimation(IndicatorAnimationType.WORM);
+        sliderView.setSliderTransformAnimation(SliderAnimations.SIMPLETRANSFORMATION);
+    }
+
+    private void getImageSlider() {
+        imageSiderModelList = new ArrayList<>();
+        ImageSiderModel model = new ImageSiderModel();
+        model.setId(1);
+        model.setSliderImage(R.drawable.deadpool);
+        imageSiderModelList.add(model);
+
+        ImageSiderModel model1 = new ImageSiderModel();
+        model1.setId(2);
+        model1.setSliderImage(R.drawable.deadpool1);
+        imageSiderModelList.add(model1);
+
+        ImageSiderModel model2 = new ImageSiderModel();
+        model2.setId(3);
+        model2.setSliderImage(R.drawable.deadpool2);
+        imageSiderModelList.add(model2);
+    }
+}
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+STEP 6 : create adapter imageslideradapter.java file and add following code
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+package com.example.practice101;
+
+import android.app.Activity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+
+import com.smarteist.autoimageslider.SliderViewAdapter;
+
+import java.util.ArrayList;
+
+public class ImageSliderAdapter extends SliderViewAdapter<ImageSliderAdapter.SliderViewHolder> {
+    Activity mActivity;
+    ArrayList<ImageSiderModel> imageSiderModelList;
+
+    public ImageSliderAdapter(Activity mActivity, ArrayList<ImageSiderModel> imageSiderModelList) {
+        this.mActivity = mActivity;
+        this.imageSiderModelList = imageSiderModelList;
+    }
+
+    @Override
+    public ImageSliderAdapter.SliderViewHolder onCreateViewHolder(ViewGroup parent) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.slider_item_layout, parent,false);
+        return new SliderViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(ImageSliderAdapter.SliderViewHolder viewHolder, int position) {
+        viewHolder.sliderimageView.setImageResource(imageSiderModelList.get(position).getSliderImage());
+
+    }
+
+    @Override
+    public int getCount() {
+        return imageSiderModelList.size();
+    }
+
+    public class SliderViewHolder extends SliderViewAdapter.ViewHolder {
+        private ImageView sliderimageView;
+        public SliderViewHolder(View itemView) {
+            super(itemView);
+            sliderimageView = itemView.findViewById(R.id.iv_slider);
+            itemView.setClickable(true);
+        }
+    }
+}
